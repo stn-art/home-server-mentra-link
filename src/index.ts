@@ -1,9 +1,9 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
 
 
-const MENTRAOS_API_KEY = 'e50a734a94ceddf54ad59f07dbe66cde8d4c2e1aa62bad6977c4d04ca682cf91';
-const PACKAGE_NAME = 'home-server-bridge';
-const PORT = '13376';
+const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set in .env file'); })();
+const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set in .env file'); })();
+const PORT = parseInt(process.env.PORT || '3000');
 
 class ExampleMentraOSApp extends AppServer {
 
