@@ -5,4 +5,3 @@ RUN bun install --network-concurrency 4
 COPY . .
 EXPOSE 13375
 CMD ["bun", "run", "start"]
-
