@@ -3,5 +3,5 @@ WORKDIR /app
 COPY package.json bun.lock ./
 RUN bun install --network-concurrency 4
 COPY . .
-EXPOSE 3000
+EXPOSE 13375
 CMD ["bun", "run", "start"]
