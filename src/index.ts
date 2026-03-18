@@ -2,7 +2,7 @@ import { AppServer, AppSession, ViewType } from '@mentra/sdk';
 
 
 const MENTRAOS_API_KEY = 'e50a734a94ceddf54ad59f07dbe66cde8d4c2e1aa62bad6977c4d04ca682cf91';
-const PACKAGE_NAME = 'org.home-server.bridge';
+const PACKAGE_NAME = 'home-server-bridge';
 const PORT = '13376';
 
 class ExampleMentraOSApp extends AppServer {
