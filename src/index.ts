@@ -34,17 +34,14 @@ class Bridge extends AppServer {
       if (data.pressType === 'long') {
         session.layouts.showReferenceCard(
           'Chocolate Chip Cookies',
-          '2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.'
+          '2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.'
         );
       }
       else {
-        // Show current temperature in the dashboard
-        session.layouts.showDashboardCard('Temperature', '72°F');
-
-        // Show stock price in the main view
-        session.layouts.showDashboardCard('AAPL', '$178.72', {
-          view: ViewType.MAIN
-        });
+        session.layouts.showDoubleTextWall(
+          'Weather Forecast',
+          'Partly cloudy, 72°F, 10% chance of rain'
+        );
       }
     })
   }
