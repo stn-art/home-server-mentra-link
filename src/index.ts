@@ -30,11 +30,7 @@ class Bridge extends AppServer {
     })
 
     session.events.onButtonPress(data => {
-      console.log(`Button ${data.buttonId} was ${data.pressType} pressed`)
-    })
-
-    session.events.onGlassesBattery((data) => {
-      console.log('Glasses battery:', data);
+      session.layouts.showTextWall(`Button ${data.buttonId} was ${data.pressType} pressed`)
     })
   }
 }
