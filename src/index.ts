@@ -1,11 +1,10 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
 
+const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set'); })();
+const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
+const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
-const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set in .env file'); })();
-const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set in .env file'); })();
-const PORT = parseInt(process.env.PORT || '3000');
-
-class ExampleMentraOSApp extends AppServer {
+class Bridge extends AppServer {
 
   constructor() {
     super({
@@ -30,6 +29,10 @@ class ExampleMentraOSApp extends AppServer {
       }
     })
 
+    session.events.onButtonPress(data => {
+      console.log(`Button ${data.buttonId} was ${data.pressType} pressed`)
+    })
+
     session.events.onGlassesBattery((data) => {
       console.log('Glasses battery:', data);
     })
@@ -39,6 +42,6 @@ class ExampleMentraOSApp extends AppServer {
 // Start the server
 // DEV CONSOLE URL: https://console.mentra.glass/
 // Get your webhook URL from ngrok (or whatever public URL you have)
-const app = new ExampleMentraOSApp();
+const app = new Bridge();
 
 app.start().catch(console.error);
