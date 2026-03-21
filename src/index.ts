@@ -30,18 +30,11 @@ class Bridge extends AppServer {
     })
 
     session.events.onButtonPress(data => {
-      session.layouts.showTextWall(`Button ${data.buttonId} was ${data.pressType} pressed`)
       if (data.pressType === 'long') {
-        session.layouts.showReferenceCard(
-          'Что ты выбираешь, когда хочешь сладкого?',
-          '> Да\n\  Нет',
-        );
+        session.layouts.showTextWall('Что ты выбираешь, когда хочешь сладкого?\n|> Да\n\|  Нет');
       }
       else {
-        session.layouts.showReferenceCard(
-          'Что ты выбираешь, когда хочешь сладкого?',
-          '  Да\n\> Нет',
-        );
+        session.layouts.showTextWall('Что ты выбираешь, когда хочешь сладкого?\n|  Да\n\|> Нет');
       }
     })
   }
