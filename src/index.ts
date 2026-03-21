@@ -32,7 +32,7 @@ class Bridge extends AppServer {
     session.events.onButtonPress(data => {
       session.dashboard.content.write('✅ Task completed');
       if (data.pressType === 'long') {
-        session.layouts.showTextWall('Что ты выбираешь, когда хочешь сладкого?\n|> Да <|\n\|  Нет  |');
+        session.layouts.showTextWall('Что ты выбираешь, когда хочешь сладкого?\n|> ✅Да <|\n\|  ⚠️Нет  |');
       }
       else {
         session.layouts.showTextWall('Что ты выбираешь, когда хочешь сладкого?\n|  Да  |\n\|> Нет <|');
