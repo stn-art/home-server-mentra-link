@@ -33,14 +33,14 @@ class Bridge extends AppServer {
       session.layouts.showTextWall(`Button ${data.buttonId} was ${data.pressType} pressed`)
       if (data.pressType === 'long') {
         session.layouts.showReferenceCard(
-          'Chocolate Chip Cookies',
-          '2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.2 cups flour\n1 cup sugar\n1/2 cup butter\n2 eggs\n1 tsp vanilla\n2 cups chocolate chips\n\nMix ingredients. Bake at 350°F for 10-12 minutes.'
+          'Что ты выбираешь, когда хочешь сладкого?',
+          '> Да\n\  Нет',
         );
       }
       else {
-        session.layouts.showDoubleTextWall(
-          'Weather Forecast',
-          'Partly cloudy, 72°F, 10% chance of rain'
+        session.layouts.showReferenceCard(
+          'Что ты выбираешь, когда хочешь сладкого?',
+          '  Да\n\> Нет',
         );
       }
     })
