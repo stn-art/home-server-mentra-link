@@ -27,9 +27,12 @@ class Bridge extends AppServer {
           durationMs: 3000
         });
       }
-
-      const allSettings = session.settings.getAll();
-console.log(`Total settings: ${allSettings.length}`);
+      else {
+        session.layouts.showTextWall("Transcribing: " + data.text, {
+          view: ViewType.MAIN,
+          durationMs: 1000
+        });
+      }
     })
 
     session.events.onButtonPress(data => {
