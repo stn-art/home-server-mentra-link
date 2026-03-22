@@ -110,7 +110,7 @@ export async function renderTextBitmap(
   ctx.fillText(line, x, y);
 
   const { data } = ctx.getImageData(0, 0, width, height);
-  const bmpBuffer = createGrayBmp(width, height, data);
+  const bmpBuffer = createMonoBmp(width, height, data);
   const base64 = bmpBuffer.toString("base64");
 
   await session.layouts.showBitmapView(base64);
