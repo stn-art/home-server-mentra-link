@@ -43,7 +43,12 @@ function createMentraBitmap(width: number, height: number, rgba: Uint8ClampedArr
       const brightness = rgba[i] + rgba[i + 1] + rgba[i + 2];
 
       // 🔥 ключ: инверсия под Mentra
-      const v = brightness > 382 ? 1 : 0;
+      const gray =
+  rgba[i] * 0.3 +
+  rgba[i + 1] * 0.59 +
+  rgba[i + 2] * 0.11;
+
+const v = gray > 128 ? 0 : 1;
 
       byte |= v << bit;
       bit--;
