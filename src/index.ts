@@ -7,17 +7,20 @@ const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Erro
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
 function createMonoBmp(width: number, height: number, rgba: Uint8ClampedArray) {
-  const rowSize = Math.ceil(width / 8); // 1 бит на пиксель
+  const rowSize = Math.ceil(width / 8);
   const paddedRowSize = Math.ceil(rowSize / 4) * 4;
   const pixelArraySize = paddedRowSize * height;
-  const fileSize = 54 + pixelArraySize;
+
+  const pixelDataOffset = 62; // ✅ ВАЖНО
+  const fileSize = pixelDataOffset + pixelArraySize;
 
   const buffer = Buffer.alloc(fileSize);
 
   // BMP HEADER
-  buffer.write("BM"); // signature
+  buffer.write("BM");
   buffer.writeUInt32LE(fileSize, 2);
-  buffer.writeUInt32LE(54, 10); // pixel data offset
+  buffer.writeUInt32LE(pixelDataOffset, 10);
+
 
   // DIB HEADER
   buffer.writeUInt32LE(40, 14); // header size
