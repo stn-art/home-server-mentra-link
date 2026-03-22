@@ -27,6 +27,9 @@ class Bridge extends AppServer {
           durationMs: 3000
         });
       }
+
+      const allSettings = session.settings.getAll();
+console.log(`Total settings: ${allSettings.length}`);
     })
 
     session.events.onButtonPress(data => {
