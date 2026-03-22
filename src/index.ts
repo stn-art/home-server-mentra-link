@@ -28,28 +28,9 @@ class Bridge extends AppServer {
         });
       }
       else {
-        session.layouts.showTextWall("Transcribing: " + data.text, {
+        session.layouts.showTextWall("✅ ⚠️Transcribing: " + data.text, {
           view: ViewType.MAIN
         });
-      }
-
-      if (session.capabilities.hasButton && session.capabilities.button) {
-        const buttons = session.capabilities.button
-
-        console.log(`Physical buttons: ${buttons.count || 0}`)
-
-        buttons.buttons?.forEach((button, index) => {
-          console.log(`Button ${index}:`)
-          console.log(`  Type: ${button.type}`)
-          console.log(`  Events: ${button.events.join(", ")}`)
-          console.log(`  Capacitive: ${button.isCapacitive || false}`)
-        })
-
-        // Subscribe to button events
-        session.events.onButtonPress(data => {
-          console.log(`Button pressed: ${data.buttonId} (${data.pressType})`)
-          // data.buttonId and data.pressType are not yet fully implimented
-        })
       }
     })
 
