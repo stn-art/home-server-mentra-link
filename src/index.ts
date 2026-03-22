@@ -39,10 +39,19 @@ function createTestBmp() {
 
   let ptr = offset;
 
- for (let i = 0; i < paddedRowSize; i++) {
-  buffer[ptr++] = 0x00; // ← это правильный "чёрный"
-}
+  for (let y = 0; y < height; y++) {
+    let ptrRowStart = ptr;
 
+    for (let xByte = 0; xByte < rowSize; xByte++) {
+      // чередуем полосы: 10101010
+      buffer[ptr++] = 0b10101010;
+    }
+
+    // padding
+    while ((ptr - offset) % paddedRowSize !== 0) {
+      buffer[ptr++] = 0x00;
+    }
+  }
   return buffer;
 }
 
@@ -51,7 +60,7 @@ export async function renderTextBitmap(
   text: string
 ) {
   const bmp = createTestBmp();
-await session.layouts.showBitmapView(bmp.toString("base64"));
+  await session.layouts.showBitmapView(bmp.toString("base64"));
 }
 
 class Bridge extends AppServer {
