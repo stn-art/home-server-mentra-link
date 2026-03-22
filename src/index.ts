@@ -11,8 +11,8 @@ export async function renderTextBitmap(
   session: AppSession,
   text: string
 ) {
-  const width = 640;
-  const height = 200;
+  const width = 576;
+  const height = 135;
 
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
