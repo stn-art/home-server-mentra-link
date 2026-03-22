@@ -5,7 +5,11 @@ const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKA
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
-async function renderTextToBitmap(session, text) {
+
+export async function renderTextBitmap(
+  session: AppSession,
+  text: string
+) {
   const width = 640;
   const height = 200;
 
@@ -18,7 +22,7 @@ async function renderTextToBitmap(session, text) {
 
   // текст
   ctx.fillStyle = "white";
-  ctx.font = "28px sans-serif";
+  ctx.font = "28px Roboto";
   ctx.textBaseline = "top";
 
   const maxWidth = 620;
@@ -28,7 +32,7 @@ async function renderTextToBitmap(session, text) {
   let y = 10;
   let line = "";
 
-  for (let word of text.split(" ")) {
+  for (const word of text.split(" ")) {
     const test = line + word + " ";
     if (ctx.measureText(test).width > maxWidth) {
       ctx.fillText(line, x, y);
@@ -41,22 +45,15 @@ async function renderTextToBitmap(session, text) {
 
   ctx.fillText(line, x, y);
 
-  const { data } = ctx.getImageData(0, 0, width, height);
+  // 🔥 ВАЖНО: получаем PNG buffer
+  const buffer = canvas.toBuffer("image/png");
 
-  const bitmap = new Uint8Array(width * height);
+  // 🔥 конвертируем в base64
+  const base64 = buffer.toString("base64");
 
-  for (let i = 0; i < width * height; i++) {
-    const r = data[i * 4];
-    const g = data[i * 4 + 1];
-    const b = data[i * 4 + 2];
-
-    bitmap[i] = (r + g + b) > 382 ? 255 : 0;
-  }
-
-  await session.layouts.showBitmapView({
-    width,
-    height,
-    bitmap
+  // 🔥 отправляем
+  await session.layouts.showBitmapView(base64, {
+    view: 0, // или ViewType.MAIN если нужно
   });
 }
 
