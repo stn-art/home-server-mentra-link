@@ -42,7 +42,7 @@ function createWorkingBmp() {
   for (let y = 0; y < height; y++) {
     for (let xByte = 0; xByte < rowSize; xByte++) {
       // 👇 ПОЛОВИНА ЭКРАНА ЧЁРНАЯ / БЕЛАЯ
-      buffer[ptr++] = (xByte < rowSize / 2) ? 0x00 : 0xFF;
+      buffer[ptr++] = (xByte < rowSize / 2) ? 0xFF : 0x00;
     }
 
     while ((ptr - offset) % paddedRowSize !== 0) {
