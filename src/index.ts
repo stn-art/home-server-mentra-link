@@ -43,10 +43,11 @@ function createMonoBmp(width: number, height: number, rgba: Uint8ClampedArray) {
 
     for (let x = 0; x < width; x++) {
       const i = (y * width + x) * 4;
-      const v = (rgba[i] + rgba[i + 1] + rgba[i + 2]) > 382 ? 1 : 0;
+      const brightness = rgba[i] + rgba[i + 1] + rgba[i + 2];
+const v = brightness > 382 ? 0 : 1; // инверсия
 
-      byte |= v << bit;
-      bit--;
+byte |= v << (7 - bit);
+bit--;
 
       if (bit < 0) {
         buffer[offset++] = byte;
