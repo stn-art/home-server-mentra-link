@@ -1,14 +1,10 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
-import { createCanvas, registerFont } from "canvas";
+import { createCanvas } from "canvas";
 
 const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set'); })();
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
-
-registerFont("./fonts/Roboto-Regular.ttf", {
-  family: "Roboto",
-});
 
 export async function renderTextBitmap(
   session: AppSession,
@@ -26,7 +22,7 @@ export async function renderTextBitmap(
 
   // текст
   ctx.fillStyle = "white";
-  ctx.font = "28px Roboto";
+  ctx.font = "28px sans-serif";
   ctx.textBaseline = "top";
 
   const maxWidth = 620;
