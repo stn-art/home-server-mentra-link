@@ -6,7 +6,7 @@ const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Erro
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
 
-export async function renderTextBitmap(
+async function renderTextBitmap(
   session: AppSession,
   text: string
 ) {
