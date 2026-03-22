@@ -6,6 +6,63 @@ const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKA
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
+function createMonoBmp(width: number, height: number, rgba: Uint8ClampedArray) {
+  const rowSize = Math.ceil(width / 8); // 1 бит на пиксель
+  const paddedRowSize = Math.ceil(rowSize / 4) * 4;
+  const pixelArraySize = paddedRowSize * height;
+  const fileSize = 54 + pixelArraySize;
+
+  const buffer = Buffer.alloc(fileSize);
+
+  // BMP HEADER
+  buffer.write("BM"); // signature
+  buffer.writeUInt32LE(fileSize, 2);
+  buffer.writeUInt32LE(54, 10); // pixel data offset
+
+  // DIB HEADER
+  buffer.writeUInt32LE(40, 14); // header size
+  buffer.writeInt32LE(width, 18);
+  buffer.writeInt32LE(-height, 22); // top-down
+  buffer.writeUInt16LE(1, 26); // planes
+  buffer.writeUInt16LE(1, 28); // 1 bit per pixel
+  buffer.writeUInt32LE(0, 30); // compression
+  buffer.writeUInt32LE(pixelArraySize, 34);
+
+  // PALETTE (black & white)
+  buffer.writeUInt32LE(0x00000000, 54); // black
+  buffer.writeUInt32LE(0x00ffffff, 58); // white
+
+  let offset = 62;
+
+  for (let y = 0; y < height; y++) {
+    let byte = 0;
+    let bit = 7;
+
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4;
+      const v = (rgba[i] + rgba[i + 1] + rgba[i + 2]) > 382 ? 1 : 0;
+
+      byte |= v << bit;
+      bit--;
+
+      if (bit < 0) {
+        buffer[offset++] = byte;
+        byte = 0;
+        bit = 7;
+      }
+    }
+
+    if (bit !== 7) {
+      buffer[offset++] = byte;
+    }
+
+    while ((offset - 62) % paddedRowSize !== 0) {
+      buffer[offset++] = 0;
+    }
+  }
+
+  return buffer;
+}
 
 export async function renderTextBitmap(
   session: AppSession,
@@ -46,17 +103,10 @@ export async function renderTextBitmap(
 
   ctx.fillText(line, x, y);
 
-  // 🔥 получаем RGBA
   const { data } = ctx.getImageData(0, 0, width, height);
 
-  // 🔥 bmp-js ждёт BGRA
-  const bmpData = bmp.encode({
-    data: Buffer.from(data),
-    width,
-    height,
-  });
-
-  const base64 = bmpData.data.toString("base64");
+  const bmpBuffer = createMonoBmp(width, height, data);
+  const base64 = bmpBuffer.toString("base64");
 
   await session.layouts.showBitmapView(base64);
 }
