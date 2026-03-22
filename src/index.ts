@@ -56,17 +56,8 @@ class Bridge extends AppServer {
 async function renderTextToBitmap(text, session) {
   const width = 640;
   const height = 200;
-
-  // создаем canvas
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-
+  const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
-
-  if (!ctx) {
-    throw new Error("Failed to get canvas context");
-  }
 
   // фон
   ctx.fillStyle = "black";
@@ -77,7 +68,6 @@ async function renderTextToBitmap(text, session) {
   ctx.font = "24px sans-serif";
   ctx.textBaseline = "top";
 
-  // перенос строк (очень простой, но работает)
   const maxWidth = 380;
   const lineHeight = 28;
   let x = 10;
@@ -98,13 +88,12 @@ async function renderTextToBitmap(text, session) {
       line = testLine;
     }
   }
+
   ctx.fillText(line, x, y);
 
-  // получаем пиксели
   const imageData = ctx.getImageData(0, 0, width, height);
   const rgba = imageData.data;
 
-  // конвертируем в 1-канальный bitmap (0-255)
   const bitmap = new Uint8Array(width * height);
 
   for (let i = 0; i < width * height; i++) {
@@ -112,7 +101,6 @@ async function renderTextToBitmap(text, session) {
     const g = rgba[i * 4 + 1];
     const b = rgba[i * 4 + 2];
 
-    // простая яркость
     bitmap[i] = (r + g + b) / 3 > 128 ? 255 : 0;
   }
 
