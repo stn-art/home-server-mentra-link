@@ -6,19 +6,47 @@ const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKA
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
-function createRawMentraBitmap() {
+function createWorkingBmp() {
   const width = 576;
   const height = 135;
 
-  const size = width * height;
-  const buffer = Buffer.alloc(size);
+  const rowSize = Math.ceil(width / 8);
+  const paddedRowSize = Math.ceil(rowSize / 4) * 4;
+  const pixelArraySize = paddedRowSize * height;
 
-  // левая половина чёрная, правая белая
+  const offset = 62;
+  const fileSize = offset + pixelArraySize;
+
+  const buffer = Buffer.alloc(fileSize);
+
+  // BMP HEADER
+  buffer.write("BM", 0);
+  buffer.writeUInt32LE(fileSize, 2);
+  buffer.writeUInt32LE(offset, 10);
+
+  // DIB HEADER
+  buffer.writeUInt32LE(40, 14);
+  buffer.writeInt32LE(width, 18);
+  buffer.writeInt32LE(height, 22);
+  buffer.writeUInt16LE(1, 26);
+  buffer.writeUInt16LE(1, 28);
+  buffer.writeUInt32LE(0, 30);
+  buffer.writeUInt32LE(pixelArraySize, 34);
+
+  // palette (ВАЖНО: порядок)
+  buffer.writeUInt32LE(0x00000000, 54); // black
+  buffer.writeUInt32LE(0x00ffffff, 58); // white
+
+  let ptr = offset;
+
   for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = y * width + x;
+    for (let xByte = 0; xByte < rowSize; xByte++) {
+      // 👇 ПОЛОВИНА ЭКРАНА ЧЁРНАЯ / БЕЛАЯ
+      buffer[ptr++] = (xByte < rowSize / 2) ? 0x00 : 0xFF;
+    }
 
-      buffer[i] = x < width / 2 ? 0 : 255;
+    while ((ptr - offset) % paddedRowSize !== 0) {
+      buffer[ptr++] = 0x00;
     }
   }
 
@@ -29,7 +57,7 @@ export async function renderTextBitmap(
   session: AppSession,
   text: string
 ) {
-await session.layouts.showBitmapView(createRawMentraBitmap());
+await session.layouts.showBitmapView(createWorkingBmp());
 }
 
 class Bridge extends AppServer {
