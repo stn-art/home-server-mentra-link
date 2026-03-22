@@ -39,11 +39,9 @@ function createTestBmp() {
 
   let ptr = offset;
 
-  for (let y = 0; y < height; y++) {
-    for (let i = 0; i < paddedRowSize; i++) {
-      buffer[ptr++] = 0xFF; // полностью чёрный экран
-    }
-  }
+ for (let i = 0; i < paddedRowSize; i++) {
+  buffer[ptr++] = 0x00; // ← это правильный "чёрный"
+}
 
   return buffer;
 }
