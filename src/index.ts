@@ -1,4 +1,5 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
+import { createCanvas } from "canvas";
 
 const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set'); })();
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
