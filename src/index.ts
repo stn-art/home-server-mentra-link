@@ -6,7 +6,7 @@ const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Erro
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
 
-async function renderTextBitmap(
+export async function renderTextBitmap(
   session: AppSession,
   text: string
 ) {
@@ -52,9 +52,7 @@ async function renderTextBitmap(
   const base64 = buffer.toString("base64");
 
   // 🔥 отправляем
-  await session.layouts.showBitmapView(base64, {
-    view: 0, // или ViewType.MAIN если нужно
-  });
+  await session.layouts.showBitmapView(base64);
 }
 
 class Bridge extends AppServer {
@@ -82,7 +80,7 @@ class Bridge extends AppServer {
           view: ViewType.MAIN,
           durationMs: 5000
         });
-        await renderTextToBitmap(session, "Масло масляное, маслом масляным маслено намазано");
+        await renderTextBitmap(session, "Масло масляное, маслом масляным маслено намазано");
       }
       else {
         session.layouts.showTextWall("Transcribing: " + data.text, {
