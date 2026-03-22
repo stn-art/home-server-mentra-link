@@ -53,9 +53,11 @@ class Bridge extends AppServer {
 }
 
 
-async function renderTextToBitmap(text, session) {
+
+async function renderText(session, text) {
   const width = 640;
   const height = 200;
+
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
 
@@ -65,43 +67,39 @@ async function renderTextToBitmap(text, session) {
 
   // текст
   ctx.fillStyle = "white";
-  ctx.font = "24px sans-serif";
+  ctx.font = "28px sans-serif";
   ctx.textBaseline = "top";
 
-  const maxWidth = 380;
-  const lineHeight = 28;
+  const maxWidth = 620;
+  const lineHeight = 32;
+
   let x = 10;
   let y = 10;
-
-  const words = text.split(" ");
   let line = "";
 
-  for (let word of words) {
-    const testLine = line + word + " ";
-    const metrics = ctx.measureText(testLine);
-
-    if (metrics.width > maxWidth) {
+  for (let word of text.split(" ")) {
+    const test = line + word + " ";
+    if (ctx.measureText(test).width > maxWidth) {
       ctx.fillText(line, x, y);
       line = word + " ";
       y += lineHeight;
     } else {
-      line = testLine;
+      line = test;
     }
   }
 
   ctx.fillText(line, x, y);
 
-  const imageData = ctx.getImageData(0, 0, width, height);
-  const rgba = imageData.data;
+  const { data } = ctx.getImageData(0, 0, width, height);
 
   const bitmap = new Uint8Array(width * height);
 
   for (let i = 0; i < width * height; i++) {
-    const r = rgba[i * 4];
-    const g = rgba[i * 4 + 1];
-    const b = rgba[i * 4 + 2];
+    const r = data[i * 4];
+    const g = data[i * 4 + 1];
+    const b = data[i * 4 + 2];
 
-    bitmap[i] = (r + g + b) / 3 > 128 ? 255 : 0;
+    bitmap[i] = (r + g + b) > 382 ? 255 : 0;
   }
 
   await session.layouts.showBitmapView({
