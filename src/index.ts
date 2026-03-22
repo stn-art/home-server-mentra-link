@@ -25,7 +25,7 @@ function createMonoBmp(width: number, height: number, rgba: Uint8ClampedArray) {
   // DIB HEADER
   buffer.writeUInt32LE(40, 14); // header size
   buffer.writeInt32LE(width, 18);
-  buffer.writeInt32LE(-height, 22); // top-down
+  buffer.writeInt32LE(height, 22);
   buffer.writeUInt16LE(1, 26); // planes
   buffer.writeUInt16LE(1, 28); // 1 bit per pixel
   buffer.writeUInt32LE(0, 30); // compression
@@ -37,7 +37,7 @@ function createMonoBmp(width: number, height: number, rgba: Uint8ClampedArray) {
 
   let offset = 62;
 
-  for (let y = 0; y < height; y++) {
+  for (let y = height - 1; y >= 0; y--) {
     let byte = 0;
     let bit = 7;
 
