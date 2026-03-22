@@ -1,10 +1,14 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
-import { createCanvas } from "canvas";
+import { createCanvas, registerFont } from "canvas";
 
 const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set'); })();
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
+
+registerFont("./fonts/Roboto-Regular.ttf", {
+  family: "Roboto",
+});
 
 export async function renderTextBitmap(
   session: AppSession,
@@ -45,13 +49,18 @@ export async function renderTextBitmap(
 
   ctx.fillText(line, x, y);
 
-  // 🔥 ВАЖНО: получаем PNG buffer
-  const buffer = canvas.toBuffer("image/png");
+  // 🔥 получаем RGBA
+  const { data } = ctx.getImageData(0, 0, width, height);
 
-  // 🔥 конвертируем в base64
-  const base64 = buffer.toString("base64");
+  // 🔥 bmp-js ждёт BGRA
+  const bmpData = bmp.encode({
+    data: Buffer.from(data),
+    width,
+    height,
+  });
 
-  // 🔥 отправляем
+  const base64 = bmpData.data.toString("base64");
+
   await session.layouts.showBitmapView(base64);
 }
 
