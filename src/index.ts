@@ -85,6 +85,8 @@ export async function renderTextBitmap(
   // фон
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = "white";
+ctx.fillRect(0, 0, 100, 50);
 
   // текст
   ctx.fillStyle = "white";
