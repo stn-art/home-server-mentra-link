@@ -3,6 +3,15 @@
 FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
+# Install locales and set UTF-8 environment (for Russian and other languages)
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
+    && echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen ru_RU.UTF-8 \
+    && update-locale LANG=ru_RU.UTF-8
+ENV LANG ru_RU.UTF-8
+ENV LANGUAGE ru_RU:ru
+ENV LC_ALL ru_RU.UTF-8
+
 # install dependencies into temp directory
 # this will cache them and speed up future builds
 FROM base AS install

@@ -28,10 +28,11 @@ class Bridge extends AppServer {
         });
       }
       else {
-        session.layouts.showTextWall("✅ ⚠️Transcribing: " + data.text, {
+        session.layouts.showTextWall("Transcribing: " + data.text, {
           view: ViewType.MAIN
         });
       }
+      session.layouts.showTextWall('Что ты выбираешь, когда хочешь сладкого?\n|> ✅Да <|\n\|  ⚠️Нет  |');
     })
 
     session.events.onButtonPress(data => {
