@@ -146,7 +146,6 @@ class Bridge extends AppServer {
           view: ViewType.MAIN
         });
       }
-      session.layouts.showTextWall('Что ты выбираешь, когда хочешь сладкого?\n|> ✅Да <|\n\|  ⚠️Нет  |');
     })
 
     session.events.onButtonPress(data => {
