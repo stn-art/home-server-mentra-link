@@ -85,7 +85,7 @@ class Bridge extends AppServer {
           view: ViewType.MAIN,
           durationMs: 5000
         });
-        await renderTextToBitmap("Масло масляное, маслом масляным маслено намазано", session);
+        await renderTextToBitmap(session, "Масло масляное, маслом масляным маслено намазано");
       }
       else {
         session.layouts.showTextWall("Transcribing: " + data.text, {
