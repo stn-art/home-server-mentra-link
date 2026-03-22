@@ -6,63 +6,60 @@ const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKA
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
-function createMonoBmp(width: number, height: number, rgba: Uint8ClampedArray) {
+function createMentraBitmap(width: number, height: number, rgba: Uint8ClampedArray) {
   const rowSize = Math.ceil(width / 8);
   const paddedRowSize = Math.ceil(rowSize / 4) * 4;
   const pixelArraySize = paddedRowSize * height;
 
-  const pixelDataOffset = 62;
-  const fileSize = pixelDataOffset + pixelArraySize;
-
+  const fileSize = 62 + pixelArraySize;
   const buffer = Buffer.alloc(fileSize);
 
-  // HEADER
-  buffer.write("BM");
+  // --- BMP HEADER ---
+  buffer.write("BM", 0);
   buffer.writeUInt32LE(fileSize, 2);
-  buffer.writeUInt32LE(pixelDataOffset, 10);
+  buffer.writeUInt32LE(62, 10);
 
-  // DIB
+  // --- DIB HEADER ---
   buffer.writeUInt32LE(40, 14);
   buffer.writeInt32LE(width, 18);
   buffer.writeInt32LE(height, 22);
   buffer.writeUInt16LE(1, 26);
-  buffer.writeUInt16LE(1, 28); // 1-bit
+  buffer.writeUInt16LE(1, 28);
   buffer.writeUInt32LE(0, 30);
   buffer.writeUInt32LE(pixelArraySize, 34);
 
-  // palette
-  buffer.writeUInt32LE(0x00000000, 54); // black
-  buffer.writeUInt32LE(0x00ffffff, 58); // white
+  // --- palette ---
+  buffer.writeUInt32LE(0x00ffffff, 54); // white
+  buffer.writeUInt32LE(0x00000000, 58); // black
 
-  let offset = pixelDataOffset;
+  let offset = 62;
 
   for (let y = height - 1; y >= 0; y--) {
     let byte = 0;
-    let bitIndex = 7;
+    let bit = 7;
 
     for (let x = 0; x < width; x++) {
       const i = (y * width + x) * 4;
       const brightness = rgba[i] + rgba[i + 1] + rgba[i + 2];
 
-      // ⚠️ ВАЖНО: правильная логика
-      const bit = brightness > 382 ? 0 : 1;
+      // 🔥 ключ: инверсия под Mentra
+      const v = brightness > 382 ? 1 : 0;
 
-      byte |= bit << bitIndex;
-      bitIndex--;
+      byte |= v << bit;
+      bit--;
 
-      if (bitIndex < 0) {
+      if (bit < 0) {
         buffer[offset++] = byte;
         byte = 0;
-        bitIndex = 7;
+        bit = 7;
       }
     }
 
-    if (bitIndex !== 7) {
+    if (bit !== 7) {
       buffer[offset++] = byte;
     }
 
-    // padding
-    while ((offset - pixelDataOffset) % paddedRowSize !== 0) {
+    while ((offset - 62) % paddedRowSize !== 0) {
       buffer[offset++] = 0;
     }
   }
@@ -110,7 +107,7 @@ export async function renderTextBitmap(
   ctx.fillText(line, x, y);
 
   const { data } = ctx.getImageData(0, 0, width, height);
-  const bmpBuffer = createMonoBmp(width, height, data);
+  const bmpBuffer = createMentraBitmap(width, height, data);
   const base64 = bmpBuffer.toString("base64");
 
   await session.layouts.showBitmapView(base64);
