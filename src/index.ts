@@ -31,8 +31,8 @@ function canvasToMentraBmp(width: number, height: number, rgba: Uint8ClampedArra
   buffer.writeUInt32LE(0, 30);
   buffer.writeUInt32LE(pixelArraySize, 34);
 
-  buffer.writeUInt32LE(0x00000000, 54); // black
-  buffer.writeUInt32LE(0x00ffffff, 58); // white
+buffer.writeUInt32LE(0x00ffffff, 54); // index 0 = white
+buffer.writeUInt32LE(0x00000000, 58); // index 1 = black
 
   let ptr = offset;
 
