@@ -118,11 +118,68 @@ function createSquareBmp() {
   return buffer.toString("base64");
 }
 
+function createStripesBmp() {
+  const width = 576;
+  const height = 135;
+
+  const rowSize = Math.ceil(width / 8);
+  const paddedRowSize = Math.ceil(rowSize / 4) * 4;
+  const pixelArraySize = paddedRowSize * height;
+
+  const offset = 62;
+  const fileSize = offset + pixelArraySize;
+
+  const buffer = Buffer.alloc(fileSize);
+
+  // HEADER
+  buffer.write("BM", 0);
+  buffer.writeUInt32LE(fileSize, 2);
+  buffer.writeUInt32LE(offset, 10);
+
+  buffer.writeUInt32LE(40, 14);
+  buffer.writeInt32LE(width, 18);
+  buffer.writeInt32LE(height, 22);
+  buffer.writeUInt16LE(1, 26);
+  buffer.writeUInt16LE(1, 28);
+  buffer.writeUInt32LE(0, 30);
+  buffer.writeUInt32LE(pixelArraySize, 34);
+
+  buffer.writeUInt32LE(0x00000000, 54);
+  buffer.writeUInt32LE(0x00ffffff, 58);
+
+  let ptr = offset;
+
+  const stripeWidth = 16; // ширина полосы
+
+  for (let y = 0; y < height; y++) {
+    for (let xByte = 0; xByte < rowSize; xByte++) {
+      let byte = 0;
+
+      for (let bit = 0; bit < 8; bit++) {
+        const x = xByte * 8 + bit;
+
+        const stripeIndex = Math.floor(x / stripeWidth);
+        const v = stripeIndex % 2 === 0 ? 1 : 0;
+
+        byte |= v << (7 - bit);
+      }
+
+      buffer[ptr++] = byte;
+    }
+
+    while ((ptr - offset) % paddedRowSize !== 0) {
+      buffer[ptr++] = 0x00;
+    }
+  }
+
+  return buffer.toString("base64");
+}
+
 export async function renderTextBitmap(
   session: AppSession,
   text: string
 ) {
-await session.layouts.showBitmapView(createSquareBmp());
+await session.layouts.showBitmapView(createStripesBmp());
 }
 
 class Bridge extends AppServer {
