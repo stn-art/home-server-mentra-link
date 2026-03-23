@@ -43,8 +43,7 @@ function canvasToMentraBmp(width: number, height: number, rgba: Uint8ClampedArra
   buffer.writeUInt32LE(0x00ffffff, 58); // white
 
   let ptr = offset;
-
-  for (let y = 0; y < height; y++) {
+  for (let y = height - 1; y >= 0; y--) {
     for (let xByte = 0; xByte < rowSize; xByte++) {
       let byte = 0;
 
