@@ -6,9 +6,7 @@ const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKA
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
-registerFont("./fonts/Roboto-Regular.ttf", {
-  family: "Roboto",
-});
+
 
 function canvasToMentraBmp(width: number, height: number, rgba: Uint8ClampedArray) {
   const rowSize = Math.ceil(width / 8);
@@ -207,7 +205,7 @@ export async function renderTextBitmap(session: AppSession, text: string) {
 
   // текст
   ctx.fillStyle = "white";
-  ctx.font = "28px sans-serif";
+  ctx.font = "28px Arial";
   ctx.textBaseline = "top";
 
   ctx.fillText(text, 20, 40);
