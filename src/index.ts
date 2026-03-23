@@ -99,7 +99,7 @@ function drawWrappedText(ctx: CanvasRenderingContext2D, text: string, x: number,
 
 export async function renderTextBitmap(session: AppSession, text: string) {
   const width = 576;
-  const height = 135;
+  const height = 150;
 
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
@@ -113,7 +113,7 @@ export async function renderTextBitmap(session: AppSession, text: string) {
   ctx.font = "28px Roboto";
   ctx.textBaseline = "top";
 
-  drawWrappedText(ctx, text, 0, 0, 536, 28);
+  drawWrappedText(ctx, text, 20, 20, 536, 28);
 
   const { data } = ctx.getImageData(0, 0, width, height);
 
