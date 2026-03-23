@@ -1,10 +1,14 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
-import { createCanvas } from "canvas";
+import { createCanvas, registerFont } from "canvas";
 import bmp from "bmp-js";
 
 const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set'); })();
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
+
+registerFont("./fonts/Roboto-Regular.ttf", {
+  family: "Roboto",
+});
 
 function canvasToMentraBmp(width: number, height: number, rgba: Uint8ClampedArray) {
   const rowSize = Math.ceil(width / 8);
