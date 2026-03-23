@@ -6,10 +6,7 @@ const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKA
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
 const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not set'); })();
 
-function createWorkingBmp() {
-  const width = 576;
-  const height = 135;
-
+function canvasToMentraBmp(width: number, height: number, rgba: Uint8ClampedArray) {
   const rowSize = Math.ceil(width / 8);
   const paddedRowSize = Math.ceil(rowSize / 4) * 4;
   const pixelArraySize = paddedRowSize * height;
@@ -19,12 +16,11 @@ function createWorkingBmp() {
 
   const buffer = Buffer.alloc(fileSize);
 
-  // BMP HEADER
+  // HEADER
   buffer.write("BM", 0);
   buffer.writeUInt32LE(fileSize, 2);
   buffer.writeUInt32LE(offset, 10);
 
-  // DIB HEADER
   buffer.writeUInt32LE(40, 14);
   buffer.writeInt32LE(width, 18);
   buffer.writeInt32LE(height, 22);
@@ -33,7 +29,6 @@ function createWorkingBmp() {
   buffer.writeUInt32LE(0, 30);
   buffer.writeUInt32LE(pixelArraySize, 34);
 
-  // palette (ВАЖНО: порядок)
   buffer.writeUInt32LE(0x00000000, 54); // black
   buffer.writeUInt32LE(0x00ffffff, 58); // white
 
@@ -41,8 +36,28 @@ function createWorkingBmp() {
 
   for (let y = 0; y < height; y++) {
     for (let xByte = 0; xByte < rowSize; xByte++) {
-      // 👇 ПОЛОВИНА ЭКРАНА ЧЁРНАЯ / БЕЛАЯ
-      buffer[ptr++] = (xByte < rowSize / 2) ? 0xFF : 0x00;
+      let byte = 0;
+
+      for (let bit = 0; bit < 8; bit++) {
+        const x = xByte * 8 + bit;
+
+        if (x >= width) continue;
+
+        const i = (y * width + x) * 4;
+
+        // нормальный grayscale
+        const gray =
+          rgba[i] * 0.3 +
+          rgba[i + 1] * 0.59 +
+          rgba[i + 2] * 0.11;
+
+        // 👇 ВАЖНО: инверсия под Mentra
+        const v = gray > 128 ? 0 : 1;
+
+        byte |= v << (7 - bit);
+      }
+
+      buffer[ptr++] = byte;
     }
 
     while ((ptr - offset) % paddedRowSize !== 0) {
@@ -50,7 +65,7 @@ function createWorkingBmp() {
     }
   }
 
-  return buffer.toString("base64");
+  return buffer;
 }
 
 function createSquareBmp() {
@@ -175,11 +190,29 @@ function createStripesBmp() {
   return buffer.toString("base64");
 }
 
-export async function renderTextBitmap(
-  session: AppSession,
-  text: string
-) {
-await session.layouts.showBitmapView(createStripesBmp());
+export async function renderTextBitmap(session: AppSession, text: string) {
+  const width = 576;
+  const height = 135;
+
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext("2d");
+
+  // фон
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, width, height);
+
+  // текст
+  ctx.fillStyle = "white";
+  ctx.font = "28px sans-serif";
+  ctx.textBaseline = "top";
+
+  ctx.fillText(text, 20, 40);
+
+  const { data } = ctx.getImageData(0, 0, width, height);
+
+  const bmp = canvasToMentraBmp(width, height, data);
+
+  await session.layouts.showBitmapView(bmp.toString("base64"));
 }
 
 class Bridge extends AppServer {
