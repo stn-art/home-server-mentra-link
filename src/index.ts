@@ -98,8 +98,8 @@ function drawWrappedText(ctx: CanvasRenderingContext2D, text: string, x: number,
 }
 
 export async function renderTextBitmap(session: AppSession, text: string) {
-  const width = 576;
-  const height = 150;
+  const width = 640;
+  const height = 200;
 
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
