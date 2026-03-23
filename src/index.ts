@@ -1,6 +1,14 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
 import { createCanvas, registerFont } from "canvas";
 import bmp from "bmp-js";
+import path from "path";
+
+// 🔥 подключаем Roboto
+const fontPath = path.resolve("./fonts/Roboto-Regular.ttf");
+
+registerFont(fontPath, {
+  family: "Roboto",
+});
 
 const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set'); })();
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY ?? (() => { throw new Error('MENTRAOS_API_KEY is not set'); })();
@@ -205,7 +213,7 @@ export async function renderTextBitmap(session: AppSession, text: string) {
 
   // текст
   ctx.fillStyle = "black";
-  ctx.font = "28px DejaVu Sans";
+  ctx.font = "28px Roboto";
   ctx.textBaseline = "top";
 
   ctx.fillText(text, 20, 40);
