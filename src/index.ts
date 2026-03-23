@@ -113,7 +113,7 @@ export async function renderTextBitmap(session: AppSession, text: string) {
   ctx.font = "28px Roboto";
   ctx.textBaseline = "top";
 
-  drawWrappedText(ctx, text, 20, 20, 536, 28);
+  drawWrappedText(ctx, text, 0, 0, 536, 28);
 
   const { data } = ctx.getImageData(0, 0, width, height);
 
