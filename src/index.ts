@@ -205,7 +205,7 @@ export async function renderTextBitmap(session: AppSession, text: string) {
 
   // текст
   ctx.fillStyle = "black";
-  ctx.font = "28px Arial";
+  ctx.font = "28px DejaVu Sans";
   ctx.textBaseline = "top";
 
   ctx.fillText(text, 20, 40);
