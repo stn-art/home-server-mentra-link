@@ -1,5 +1,5 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
-import { createCanvas, registerFont } from "canvas";
+import { createCanvas, registerFont, CanvasRenderingContext2D } from "canvas";
 import bmp from "bmp-js";
 import path from "path";
 
@@ -77,126 +77,24 @@ function canvasToMentraBmp(width: number, height: number, rgba: Uint8ClampedArra
   return buffer;
 }
 
-function createSquareBmp() {
-  const width = 576;
-  const height = 135;
+function drawWrappedText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) {
+  const words = text.split(" ");
+  let line = "";
 
-  const rowSize = Math.ceil(width / 8);
-  const paddedRowSize = Math.ceil(rowSize / 4) * 4;
-  const pixelArraySize = paddedRowSize * height;
+  for (let i = 0; i < words.length; i++) {
+    const testLine = line + words[i] + " ";
+    const metrics = ctx.measureText(testLine);
 
-  const offset = 62;
-  const fileSize = offset + pixelArraySize;
-
-  const buffer = Buffer.alloc(fileSize);
-
-  // header
-  buffer.write("BM", 0);
-  buffer.writeUInt32LE(fileSize, 2);
-  buffer.writeUInt32LE(offset, 10);
-
-  buffer.writeUInt32LE(40, 14);
-  buffer.writeInt32LE(width, 18);
-  buffer.writeInt32LE(height, 22);
-  buffer.writeUInt16LE(1, 26);
-  buffer.writeUInt16LE(1, 28);
-  buffer.writeUInt32LE(0, 30);
-  buffer.writeUInt32LE(pixelArraySize, 34);
-
-  buffer.writeUInt32LE(0x00000000, 54);
-  buffer.writeUInt32LE(0x00ffffff, 58);
-
-  let ptr = offset;
-
-  const squareStartX = 200;
-  const squareEndX = 376;
-  const squareStartY = 30;
-  const squareEndY = 105;
-
-  for (let y = 0; y < height; y++) {
-    for (let xByte = 0; xByte < rowSize; xByte++) {
-      let byte = 0;
-
-      for (let bit = 0; bit < 8; bit++) {
-        const x = xByte * 8 + bit;
-
-        const inside =
-          x >= squareStartX &&
-          x < squareEndX &&
-          y >= squareStartY &&
-          y < squareEndY;
-
-        const v = inside ? 1 : 0;
-
-        byte |= v << (7 - bit);
-      }
-
-      buffer[ptr++] = byte;
-    }
-
-    while ((ptr - offset) % paddedRowSize !== 0) {
-      buffer[ptr++] = 0x00;
+    if (metrics.width > maxWidth && i > 0) {
+      ctx.fillText(line, x, y);
+      line = words[i] + " ";
+      y += lineHeight;
+    } else {
+      line = testLine;
     }
   }
 
-  return buffer.toString("base64");
-}
-
-function createStripesBmp() {
-  const width = 576;
-  const height = 135;
-
-  const rowSize = Math.ceil(width / 8);
-  const paddedRowSize = Math.ceil(rowSize / 4) * 4;
-  const pixelArraySize = paddedRowSize * height;
-
-  const offset = 62;
-  const fileSize = offset + pixelArraySize;
-
-  const buffer = Buffer.alloc(fileSize);
-
-  // HEADER
-  buffer.write("BM", 0);
-  buffer.writeUInt32LE(fileSize, 2);
-  buffer.writeUInt32LE(offset, 10);
-
-  buffer.writeUInt32LE(40, 14);
-  buffer.writeInt32LE(width, 18);
-  buffer.writeInt32LE(height, 22);
-  buffer.writeUInt16LE(1, 26);
-  buffer.writeUInt16LE(1, 28);
-  buffer.writeUInt32LE(0, 30);
-  buffer.writeUInt32LE(pixelArraySize, 34);
-
-  buffer.writeUInt32LE(0x00000000, 54);
-  buffer.writeUInt32LE(0x00ffffff, 58);
-
-  let ptr = offset;
-
-  const stripeWidth = 16; // ширина полосы
-
-  for (let y = 0; y < height; y++) {
-    for (let xByte = 0; xByte < rowSize; xByte++) {
-      let byte = 0;
-
-      for (let bit = 0; bit < 8; bit++) {
-        const x = xByte * 8 + bit;
-
-        const stripeIndex = Math.floor(x / stripeWidth);
-        const v = stripeIndex % 2 === 0 ? 1 : 0;
-
-        byte |= v << (7 - bit);
-      }
-
-      buffer[ptr++] = byte;
-    }
-
-    while ((ptr - offset) % paddedRowSize !== 0) {
-      buffer[ptr++] = 0x00;
-    }
-  }
-
-  return buffer.toString("base64");
+  ctx.fillText(line, x, y);
 }
 
 export async function renderTextBitmap(session: AppSession, text: string) {
@@ -215,7 +113,7 @@ export async function renderTextBitmap(session: AppSession, text: string) {
   ctx.font = "28px Roboto";
   ctx.textBaseline = "top";
 
-  ctx.fillText(text, 20, 40);
+  drawWrappedText(ctx, text, 20, 20, 536, 28);
 
   const { data } = ctx.getImageData(0, 0, width, height);
 
