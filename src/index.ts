@@ -135,6 +135,13 @@ class Bridge extends AppServer {
   protected async onSession(session: AppSession, sessionId: string, userId: string): Promise<void> {
     // Show welcome message
     session.layouts.showTextWall("Example App is ready!");
+    session.events.onAudioChunk((audioChunk: AudioChunk) => {
+      // audioChunk.arrayBuffer contains the raw audio data
+      const buffer = audioChunk.arrayBuffer;
+      const sampleRate = audioChunk.sampleRate || 16000;
+
+      session.logger.info('Received audio chunk:', buffer.byteLength, 'bytes at', sampleRate, 'Hz');
+    });
     session.layouts.showDoubleTextWall(
       'Temperature: 72°F',
       'Humidity: 45%'
