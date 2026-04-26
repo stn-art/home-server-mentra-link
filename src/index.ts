@@ -1,7 +1,7 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
 import * as fs from 'fs';
 import * as path from 'path';
-const wav = require('@dosy/wav');
+const wav = require('wav');
 
 
 const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set'); })();
