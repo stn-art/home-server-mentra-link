@@ -49,6 +49,19 @@ class Bridge extends AppServer {
   }
 }
 
+
+process.on('exit', () => {
+  commonWriteStream.end();
+});
+// Также обрабатываем SIGINT и другие сигналы
+['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
+  process.on(signal, () => {
+    commonWriteStream.end();
+    process.exit();
+  });
+});
+
+
 const app = new Bridge();
 app.start().catch(console.error);
 
