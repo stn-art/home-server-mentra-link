@@ -1,7 +1,3 @@
-import { AppServer, AppSession, ViewType } from '@mentra/sdk';
-import { createCanvas, registerFont, CanvasRenderingContext2D } from "canvas";
-import bmp from "bmp-js";
-import path from "path";
 
 // 🔥 подключаем Roboto
 const fontPath = path.resolve("./fonts/Roboto-Regular.ttf");
