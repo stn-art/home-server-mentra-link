@@ -10,6 +10,9 @@ const PORT = parseInt(process.env.PORT) ?? (() => { throw new Error('PORT is not
 const INDIVIDUAL_DIR = './data';
 const COMMON_FILE = './data/all_audio_chunks.raw'; // общий файл
 
+// Открываем поток для записи в общий файл (флаг 'a' — дозапись)
+const commonWriteStream = fs.createWriteStream(COMMON_FILE, { flags: 'a' });
+
 
 function getFileName(date: Date): string {
   // Пример: chunk_2025-02-20T14-35-22-123.raw
@@ -33,22 +36,16 @@ class Bridge extends AppServer {
     session.events.onAudioChunk((audioChunk: AudioChunk) => {
       const { arrayBuffer, timestamp } = audioChunk;
       const buffer = Buffer.from(arrayBuffer);
-      const fileName = getFileName(timestamp);
-      const filePath = path.join(INDIVIDUAL_DIR, fileName);
-      fs.writeFile(filePath, buffer, (err) => {
-        if (err) {
-          console.error(`Ошибка записи отдельного чанка ${fileName}:`, err);
-        } else {
-          console.log(`Сохранён чанк: ${fileName} (${buffer.length} байт)`);
-        }
+      commonWriteStream.write(buffer, (err) => {
+        if (err) console.error('Ошибка записи в общий файл:', err);
       });
-  });
+    });
 
     session.events.onTranscription(async (data) => {
-  if (data.isFinal) {
+      if (data.isFinal) {
 
-  }
-})
+      }
+    })
   }
 }
 
