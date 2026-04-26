@@ -1,6 +1,7 @@
 import { AppServer, AppSession, ViewType } from '@mentra/sdk';
 import * as fs from 'fs';
 import * as path from 'path';
+const wav = require('@dosy/wav');
 
 
 const PACKAGE_NAME = process.env.PACKAGE_NAME ?? (() => { throw new Error('PACKAGE_NAME is not set'); })();
@@ -52,6 +53,14 @@ class Bridge extends AppServer {
 
 process.on('exit', () => {
   commonWriteStream.end();
+  const writer = new wav.FileWriter('./data/output_all_chunks.wav', {
+    channels: 1,
+    sampleRate: 16000,
+    bitDepth: 16
+  });
+
+  const pcmStream = fs.createReadStream('./data/all_audio_chunks.raw');
+  pcmStream.pipe(writer); // Поток сам добавит заголовок и завершит файл
 });
 // Также обрабатываем SIGINT и другие сигналы
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
