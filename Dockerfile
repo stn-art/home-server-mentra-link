@@ -24,8 +24,6 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/src/index.ts .
 COPY --from=prerelease /usr/src/app/package.json .
 
-# ✅ ВОТ ЭТО КЛЮЧ
-COPY --from=prerelease /usr/src/app/fonts ./fonts
 
 USER bun
 EXPOSE 13376/tcp
